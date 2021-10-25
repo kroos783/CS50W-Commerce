@@ -2,11 +2,22 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-    {% if all_auctions %}
+    <ul>
         {% for auction in all_auctions %}
-            
+            <tr>
+                <td style="width:40px">
+                    <img src="{{ auction.image_URL }}" alt="img" style="width:80%">
+                </td>
+                <td>
+                    <h5><a href="{% url 'auction' auction.id %}">{{ auction.title }}</a></h5>
+                    <div>{{ auction.description_item }}</div>
+                    <div>Bid: ${{ auction.start_price }}</div>
+                    <div>Liste by: {{ auction.user }}</div>
+                </td>
+            </tr>
+
+        {% empty %}
+            <li>No active auctions</li>
         {% endfor %}
-    {% else %}
-        <h2>No Active Auctions</h2>
-    {% endif %}
+    </ul>
 {% endblock %}

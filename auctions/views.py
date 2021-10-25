@@ -4,13 +4,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import *
 from .forms import *
 
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "all_auctions": Auction.objects.all()
+        "all_auctions": Auction.objects.filter(closed=False)
     })
 
 
@@ -65,17 +66,30 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+
 @login_required
 def create_auction(request):
     if request.method == "POST":
-        user = User.objects.get(username=request.user)
-        form = AuctionForm(request.POST, request.FILES)
+        form = AuctionForm(request.POST)
+        form.owner = request.user
+        # if form is valid
         if form.is_valid():
-            auction = form.save(commit=False)
-            auction.owner = user
-            auction.save()
-            return HttpResponseRedirect(reverse("index"))
+            # try save db
+            try:
+                new_auction = form.save(commit=False)
+                new_auction.owner = request.user
+                new_auction.save()
+            # if integrity Error
+            except IntegrityError:
+                return render(request, "auctions/create.html", {
+                    "form": form,
+                    "message": "We were unable to add the auction"
+                })
+            messages.add_message(request, messages.SUCCESS, "Success! Your auction has been created.")
+            return HttpResponseRedirect(reverse("index"))    
+        # if form is not valid
         else:
+            messages.add_message(request, messages.WARNING, "Something went wrong. Please try again.")
             return render(request, "acutions/create.html", {
                 "form": form
             })
