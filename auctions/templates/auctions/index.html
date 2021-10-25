@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    {% if all_auctions %}
+        {% for auction in all_auctions %}
+            
+        {% endfor %}
+    {% else %}
+        <h2>No Active Auctions</h2>
+    {% endif %}
+{% endblock %}
