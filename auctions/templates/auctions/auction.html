@@ -1,0 +1,38 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if auction.closed %}
+    <div class="alert alert-info" role="alert">
+        Auction closed
+      </div>
+    {% endif %}
+    <h2>{{ auction.title_item }}</h2>
+        <tr>
+            <td style="width:40px">
+                <img src="{{ auction.image_URL }}" alt="img" style="width:80%">
+            </td>
+            <td>
+                <div>{{ auction.description_item }}</div>
+                <div>Bid: ${{ auction.start_price }}</div>
+                <div>Listed by: {{ auction.user }}</div>
+            </td>
+        </tr>
+        <form action="{% url 'auction' auction.id %}" enctype="multipart/form-data" method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Bid" class="btn btn-primary">
+        </form>
+        <form action="{% url 'auction' auction.id %} method="POST">
+            {% csrf_token %}
+            <button type="submit" name="button" class="btn btn-primary" value="Watchlist">Add in your watchlist</button>
+        </form>
+        {% if user.username == auction.user.username and not auction.closed %}
+            <form action="{% url 'auction' auction.id %} method="POST">
+                {% csrf_token %}
+                <button type="submit" name="button" class="btn btn-danger" value="Close">Close auction</button>
+            </form>
+        {% endif %}
+
+    
+    
+{% endblock %}

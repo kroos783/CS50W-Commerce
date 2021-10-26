@@ -9,7 +9,7 @@
                     <img src="{{ auction.image_URL }}" alt="img" style="width:80%">
                 </td>
                 <td>
-                    <h5><a href="{% url 'auction' auction.id %}">{{ auction.title }}</a></h5>
+                    <h5><a href="{% url 'auction' auction.id %}">{{ auction.title_item }}</a></h5>
                     <div>{{ auction.description_item }}</div>
                     <div>Bid: ${{ auction.start_price }}</div>
                     <div>Liste by: {{ auction.user }}</div>

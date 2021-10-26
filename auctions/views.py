@@ -99,6 +99,53 @@ def create_auction(request):
         })
 
 @login_required
+def auctions(request, auction_id):
+    auction = Auction.objects.get(id=auction_id)
+    if request.method == "POST":
+        user = User.objects.get(username=request.user)
+        if request.POST.get("button") == "Watchlist":
+            if not user.watchlist.filter(auction=auction):
+                watchlist = WatchList()
+                watchlist.user = user
+                watchlist.auction = auction
+                watchlist.save()
+            else:
+                user.watchlist.filter(auction=auction).delete()
+            return HttpResponseRedirect(reverse('auction', args=(auction.id)))
+        if not auction.closed:
+            if request.POST.get("button") == "close":
+                auction.closed = True
+                auction.save()
+            else:
+                price = float(request.POST["bid"])
+                bids = auction.bid.all()
+                if user.username != auction.user.username:
+                    if price <= auction.start_price:
+                        return render(request, "auctions/auction.html", {
+                            "auction": auction,
+                            "form": BidForm(),
+                            "message": "Error: invalid bid amount."
+                        })
+                    form = BidForm(request.POST)
+                    if form.is_valid():
+                        bid = form.save(commit=False)
+                        bid.user = user
+                        bid.save()
+                        auction.bid.add(bid)
+                        auction.start_price = price
+                        auction.save()
+                    else:
+                        return render(request, 'auctions/auction.html', {
+                            "form": form
+                        })
+        return HttpResponseRedirect(reverse('auction', args=(auction.id)))
+    else:
+        return render(request, "auctions/auction.html", {
+            "auction": auction,
+            "form": BidForm()
+        })                
+
+@login_required
 def category(request):
     pass
 
