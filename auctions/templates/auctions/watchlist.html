@@ -1,9 +1,9 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>Your watchlist: </h2>
     <ul>
-        {% for auction in all_auctions %}
+        {% for auction in watchlist %}
             <tr>
                 <td style="width:40px">
                     <img src="{{ auction.image_URL }}" alt="img" style="width:25%">
@@ -17,7 +17,7 @@
             </tr>
 
         {% empty %}
-            <li>No active auctions</li>
+            <li>Your watchlist is empty.</li>
         {% endfor %}
     </ul>
 {% endblock %}

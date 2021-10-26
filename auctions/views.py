@@ -67,7 +67,7 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-@login_required
+@login_required(login_url="/login")
 def create_auction(request):
     if request.method == "POST":
         user = User.objects.get(username=request.user)
@@ -98,7 +98,7 @@ def create_auction(request):
             "form": AuctionForm()
         })
 
-@login_required
+@login_required(login_url="/login")
 def auctions(request, auction_id):
     auction = Auction.objects.get(id=auction_id)
     if request.method == "POST":
@@ -113,7 +113,7 @@ def auctions(request, auction_id):
                 user.watchlist.filter(auction=auction).delete()
             return HttpResponseRedirect(reverse('auction', args=(auction.id)))
         if not auction.closed:
-            if request.POST.get("button") == "close":
+            if request.POST.get("button") == "Close":
                 auction.closed = True
                 auction.save()
             else:
@@ -145,10 +145,16 @@ def auctions(request, auction_id):
             "form": BidForm()
         })                
 
-@login_required
+@login_required(login_url="/login")
 def category(request):
     pass
 
-@login_required
+@login_required(login_url="/login")
 def watchlist(request):
-    pass
+    product = WatchList.objects.filter(user=request.user)
+    auction_id = WatchList.objects.values_list('auction_id', flat=True)
+    auctions = Auction.objects.filter(pk__in=auction_id)
+    return render(request, "auctions/watchlist.html", {
+        "watchlist": product,
+        "auctions": auctions
+    })

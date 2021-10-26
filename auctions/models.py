@@ -65,3 +65,6 @@ class Auction(models.Model):
 class WatchList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Watchlist_user")
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name="auction")
+
+    def __str__(self):
+        return f"{self.user}: {self.auction}"
