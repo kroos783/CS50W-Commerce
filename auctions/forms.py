@@ -1,19 +1,19 @@
-from django import forms
+from django.forms import ModelForm
 
 from auctions.models import Auction
 from .models import *
 
-class AuctionForm(forms.Form):
+class AuctionForm(ModelForm):
     class Meta:
         model = Auction
         fields = ['title_item', 'description_item', 'category', 'image_URL', 'start_price', 'durations']
 
-class CommitForm(forms.Form):
+class CommitForm(ModelForm):
     class Meta:
         model = Commit
         fields = ['comment']
 
-class BidForm(forms.Form):
+class BidForm(ModelForm):
     class Meta:
         model = Bid
-        fields = ['price']
+        fields = ['bid']

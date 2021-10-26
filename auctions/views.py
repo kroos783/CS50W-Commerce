@@ -70,14 +70,14 @@ def register(request):
 @login_required
 def create_auction(request):
     if request.method == "POST":
+        user = User.objects.get(username=request.user)
         form = AuctionForm(request.POST)
-        form.owner = request.user
         # if form is valid
         if form.is_valid():
             # try save db
             try:
                 new_auction = form.save(commit=False)
-                new_auction.owner = request.user
+                new_auction.user = user
                 new_auction.save()
             # if integrity Error
             except IntegrityError:
@@ -90,10 +90,18 @@ def create_auction(request):
         # if form is not valid
         else:
             messages.add_message(request, messages.WARNING, "Something went wrong. Please try again.")
-            return render(request, "acutions/create.html", {
+            return render(request, "auctions/create.html", {
                 "form": form
             })
     else:
-        return render(request, "acutons/create.html", {
+        return render(request, "auctions/create.html", {
             "form": AuctionForm()
         })
+
+@login_required
+def category(request):
+    pass
+
+@login_required
+def watchlist(request):
+    pass
