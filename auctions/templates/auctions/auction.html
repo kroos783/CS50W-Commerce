@@ -14,12 +14,12 @@
             <td>
                 <div>{{ auction.description_item }}</div>
                 <div>Bid: ${{ auction.start_price }}</div>
-                <div>Listed by: {{ auction.user }}</div>
+                <div>Duration : {{ auction.durations }} days</div>
             </td>
         </tr>
         <form action="{% url 'auction' auction.id %}" enctype="multipart/form-data" method="POST">
             {% csrf_token %}
-            {{ form }}
+            {{ formBid }}
             <input type="submit" value="Bid" class="btn btn-primary">
         </form>
         <form action="{% url 'auction' auction.id %}" method="POST">
@@ -30,9 +30,31 @@
             <form action="{% url 'auction' auction.id %}" method="POST">
                 {% csrf_token %}
                 <button type="submit" name="button" class="btn btn-danger" value="Close">Close auction</button>
-            </form>
+            </form>        
         {% endif %}
+        <tr>
+            <td>
+                <div>Listed by: {{ auction.user }}</div>
+                <div>Published {{ auction.time }}</div>
+                <div>{{ auction.bid }}</div>
+            </td>
+        </tr>
+        
+        <form action="{% url 'auction' auction.id %}" method="POST">
+            {% csrf_token %}
+            {{ commitForm }}
+            <button type="submit" name="button" class="btn btn-primary" value="Comment">Add comment</button>
+        </form>
 
+        {% for comment in auction.comments.all %}
+        <tr>
+            <td>
+                <div>User : {{ comment.user }}</div>
+                <div>Comment : {{ comment.comment }}</div>
+                <div>Delivery : {{ comment.time }}</div>
+            </td>
+        </tr>
+        {% endfor %}
     
     
 {% endblock %}

@@ -104,14 +104,23 @@ def auctions(request, auction_id):
     if request.method == "POST":
         user = User.objects.get(username=request.user)
         if request.POST.get("button") == "Watchlist":
-            if not user.watchlist.filter(auction=auction):
+            if not user.Watchlist_user.filter(auction=auction):
                 watchlist = WatchList()
                 watchlist.user = user
                 watchlist.auction = auction
                 watchlist.save()
             else:
-                user.watchlist.filter(auction=auction).delete()
-            return HttpResponseRedirect(reverse('auction', args=(auction.id)))
+                user.Watchlist_user.filter(auction=auction).delete()
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+        if request.POST.get("button") == "Comment":
+            form = CommitForm(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.user = user
+                comment.save()
+                auction.comments.add(comment)
+                auction.save()
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
         if not auction.closed:
             if request.POST.get("button") == "Close":
                 auction.closed = True
@@ -123,12 +132,13 @@ def auctions(request, auction_id):
                     if price <= auction.start_price:
                         return render(request, "auctions/auction.html", {
                             "auction": auction,
-                            "form": BidForm(),
+                            "formBid": BidForm(),
+                            "commitForm": CommitForm(),
                             "message": "Error: invalid bid amount."
                         })
-                    form = BidForm(request.POST)
-                    if form.is_valid():
-                        bid = form.save(commit=False)
+                    formBid = BidForm(request.POST)
+                    if formBid.is_valid():
+                        bid = formBid.save(commit=False)
                         bid.user = user
                         bid.save()
                         auction.bid.add(bid)
@@ -136,13 +146,15 @@ def auctions(request, auction_id):
                         auction.save()
                     else:
                         return render(request, 'auctions/auction.html', {
-                            "form": form
+                            "formBid": formBid,
+                            "commitForm": CommitForm()
                         })
-        return HttpResponseRedirect(reverse('auction', args=(auction.id)))
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return render(request, "auctions/auction.html", {
             "auction": auction,
-            "form": BidForm()
+            "formBid": BidForm(),
+            "commitForm": CommitForm()
         })                
 
 @login_required(login_url="/login")
@@ -152,8 +164,8 @@ def category(request):
 @login_required(login_url="/login")
 def watchlist(request):
     product = WatchList.objects.filter(user=request.user)
-    auction_id = WatchList.objects.values_list('auction_id', flat=True)
-    auctions = Auction.objects.filter(pk__in=auction_id)
+    auctions_id = WatchList.objects.values_list('auction', flat=True)
+    auctions = Auction.objects.filter(pk__in=auctions_id)
     return render(request, "auctions/watchlist.html", {
         "watchlist": product,
         "auctions": auctions
