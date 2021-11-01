@@ -2,6 +2,13 @@
 
 {% block body %}
     <h2>Active Listings</h2>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div {% if message.tags %} class="{{ message.tags }}">{% endif %}{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <ul>
         {% for auction in all_auctions %}
             <tr>
@@ -11,7 +18,12 @@
                 <td>
                     <h5><a href="{% url 'auction' auction.id %}">{{ auction.title_item }}</a></h5>
                     <div>{{ auction.description_item }}</div>
-                    <div>Bid: ${{ auction.start_price }}</div>
+                    {% if auction.bid.last %}
+                        <div>Bid : {{ auction.bid.last.bid }}$</div>
+                    {% else %}
+                        <div>No bid again, let's be the first to bid.</div>
+                        <div>Start price : {{ auction.start_price }}$</div>
+                    {% endif %}
                     <div>Listed by: {{ auction.user }}</div>
                 </td>
             </tr>

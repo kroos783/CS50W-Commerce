@@ -36,7 +36,7 @@ class Bid(models.Model):
     bid = models.DecimalField(max_digits=8, decimal_places=2)
     
     def __str__(self):
-        return f"{self.user} bid for {self.bid}"
+        return f"Last bid : {self.bid}$ - By : {self.user}"
 
 class Commit(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commit_user")

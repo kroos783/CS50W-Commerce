@@ -85,11 +85,11 @@ def create_auction(request):
                     "form": form,
                     "message": "We were unable to add the auction"
                 })
-            messages.add_message(request, messages.SUCCESS, "Success! Your auction has been created.")
+            messages.add_message(request, messages.SUCCESS, "Success! Your auction has been created.", extra_tags="alert alert-success")
             return HttpResponseRedirect(reverse("index"))    
         # if form is not valid
         else:
-            messages.add_message(request, messages.WARNING, "Something went wrong. Please try again.")
+            messages.add_message(request, messages.WARNING, "Something went wrong. Please try again.", extra_tags="alert alert-danger")
             return render(request, "auctions/create.html", {
                 "form": form
             })
@@ -97,6 +97,7 @@ def create_auction(request):
         return render(request, "auctions/create.html", {
             "form": AuctionForm()
         })
+
 
 @login_required(login_url="/login")
 def auctions(request, auction_id):
@@ -109,8 +110,10 @@ def auctions(request, auction_id):
                 watchlist.user = user
                 watchlist.auction = auction
                 watchlist.save()
+                messages.add_message(request, messages.SUCCESS, "This auction has been added in your watchlist.", extra_tags="alert alert-success")
             else:
                 user.Watchlist_user.filter(auction=auction).delete()
+                messages.add_message(request, messages.SUCCESS, "This auction has been deleted to your watchlist.", extra_tags="alert alert-danger")
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
         if request.POST.get("button") == "Comment":
             form = CommitForm(request.POST)
@@ -120,35 +123,59 @@ def auctions(request, auction_id):
                 comment.save()
                 auction.comments.add(comment)
                 auction.save()
+                messages.add_message(request, messages.SUCCESS, "Your comment has been added.", extra_tags="alert alert-success")
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
         if not auction.closed:
             if request.POST.get("button") == "Close":
                 auction.closed = True
                 auction.save()
+                messages.add_message(request, messages.SUCCESS, "Your auction is now closed.", extra_tags="alert alert-danger")
             else:
                 price = float(request.POST["bid"])
-                bids = auction.bid.all()
                 if user.username != auction.user.username:
-                    if price <= auction.start_price:
-                        return render(request, "auctions/auction.html", {
-                            "auction": auction,
-                            "formBid": BidForm(),
-                            "commitForm": CommitForm(),
-                            "message": "Error: invalid bid amount."
-                        })
-                    formBid = BidForm(request.POST)
-                    if formBid.is_valid():
-                        bid = formBid.save(commit=False)
-                        bid.user = user
-                        bid.save()
-                        auction.bid.add(bid)
-                        auction.start_price = price
-                        auction.save()
+                    if not auction.bid.exists():
+                        if float(price) <= float(auction.start_price):
+                            messages.add_message(request, messages.WARNING, "Error: invalid bid amount.", extra_tags="alert alert-danger")
+                            return render(request, "auctions/auction.html", {
+                                "auction": auction,
+                                "formBid": BidForm(),
+                                "commitForm": CommitForm()
+                            })
+                        else:
+                            formBid = BidForm(request.POST)
+                            if formBid.is_valid():
+                                bid = formBid.save(commit=False)
+                                bid.user = user
+                                bid.save()
+                                auction.bid.add(bid)
+                                auction.save()
+                                messages.add_message(request, messages.SUCCESS, "Your bid is placed.", extra_tags="alert alert-success")
+                            else:
+                                return render(request, 'auctions/auction.html', {
+                                    "formBid": formBid,
+                                    "commitForm": CommitForm()
+                                })
+                    elif float(price) <= float(auction.bid.last().bid):
+                            messages.add_message(request, messages.WARNING, "Error: invalid bid amount.", extra_tags="alert alert-danger")
+                            return render(request, "auctions/auction.html", {
+                                "auction": auction,
+                                "formBid": BidForm(),
+                                "commitForm": CommitForm()
+                            })
                     else:
-                        return render(request, 'auctions/auction.html', {
-                            "formBid": formBid,
-                            "commitForm": CommitForm()
-                        })
+                        formBid = BidForm(request.POST)
+                        if formBid.is_valid():
+                            bid = formBid.save(commit=False)
+                            bid.user = user
+                            bid.save()
+                            auction.bid.add(bid)
+                            auction.save()
+                            messages.add_message(request, messages.SUCCESS, "Your bid is placed.", extra_tags="alert alert-success")
+                        else:
+                            return render(request, 'auctions/auction.html', {
+                                "formBid": formBid,
+                                "commitForm": CommitForm()
+                            })
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return render(request, "auctions/auction.html", {

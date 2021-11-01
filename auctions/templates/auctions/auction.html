@@ -1,10 +1,22 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div {% if message.tags %} class="{{ message.tags }}">{% endif %}{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
     {% if auction.closed %}
     <div class="alert alert-info" role="alert">
         Auction closed
-      </div>
+    </div>
+        {% if auction.bid.last.user.username %}
+        <strong>Winner: </strong>{{ auction.bid.last.user.username }}
+        {% else %}
+        <strong>No body win this auction. </strong>
+        {% endif %}
     {% endif %}
     <h2>{{ auction.title_item }}</h2>
         <tr>
@@ -13,10 +25,17 @@
             </td>
             <td>
                 <div>{{ auction.description_item }}</div>
-                <div>Bid: ${{ auction.start_price }}</div>
+                {% if auction.bid.last %}
+                    <div>Bid : {{ auction.bid.last.bid }}$</div>
+                    <div>Best bid by : {{ auction.bid.last.user.username }}</div>
+                {% else %}
+                    <div>No bid again, let's be the first to bid.</div>
+                {% endif %}
+                <div>Start price : {{ auction.start_price }}$</div>
                 <div>Duration : {{ auction.durations }} days</div>
             </td>
         </tr>
+        {% if user.username != auction.user.username and not auction.closed %}
         <form action="{% url 'auction' auction.id %}" enctype="multipart/form-data" method="POST">
             {% csrf_token %}
             {{ formBid }}
@@ -26,6 +45,7 @@
             {% csrf_token %}
             <button type="submit" name="button" class="btn btn-primary" value="Watchlist">Add in your watchlist</button>
         </form>
+        {% endif %}
         {% if user.username == auction.user.username and not auction.closed %}
             <form action="{% url 'auction' auction.id %}" method="POST">
                 {% csrf_token %}
@@ -36,16 +56,15 @@
             <td>
                 <div>Listed by: {{ auction.user }}</div>
                 <div>Published {{ auction.time }}</div>
-                <div>{{ auction.bid }}</div>
             </td>
         </tr>
-        
+        {% if user.username != auction.user.username %}
         <form action="{% url 'auction' auction.id %}" method="POST">
             {% csrf_token %}
             {{ commitForm }}
             <button type="submit" name="button" class="btn btn-primary" value="Comment">Add comment</button>
         </form>
-
+        {% endif %}
         {% for comment in auction.comments.all %}
         <tr>
             <td>
