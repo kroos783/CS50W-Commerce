@@ -184,9 +184,17 @@ def auctions(request, auction_id):
             "commitForm": CommitForm()
         })                
 
-@login_required(login_url="/login")
-def category(request):
-    pass
+def categories(request):
+    if request.POST.get("button") == "Filter":
+        category = request.POST["category"]
+        auctions = Auction.objects.filter(category=category)
+        return render(request, 'auctions/categories.html', {
+            "form": AuctionForm(),
+            "auctions": auctions
+        })
+    return render(request, 'auctions/categories.html', {
+        "form": AuctionForm()
+    })
 
 @login_required(login_url="/login")
 def watchlist(request):

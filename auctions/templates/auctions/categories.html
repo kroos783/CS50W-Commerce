@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+{% block title %} Categories {% endblock %}
+
+{% block body %}
+
+    <form action="{% url 'categories' %}" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{ form.category }}
+        <button type="submit" name="button" class="btn btn-primary" value="Filter">Filter</button>
+    </form>
+    <ul>
+    {% for auction in auctions %}
+        <tr>
+            <td style="width:40px">
+                <img src="{{ auction.image_URL }}" alt="img" style="width:25%">
+            </td>
+            <td>
+                <h5><a href="{% url 'auction' auction.id %}">{{ auction.title_item }}</a></h5>
+                <div>{{ auction.description_item }}</div>
+                {% if auction.bid.last %}
+                    <div>Bid : {{ auction.bid.last.bid }}$</div>
+                {% else %}
+                    <div>No bid again, let's be the first to bid.</div>
+                    <div>Start price : {{ auction.start_price }}$</div>
+                {% endif %}
+                <div>Listed by: {{ auction.user }}</div>
+            </td>
+        </tr>
+    {% empty %}
+        <div>No auction in this category.</div>
+    {% endfor %}
+    </ul>
+    
+
+{% endblock %}
