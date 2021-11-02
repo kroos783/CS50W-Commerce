@@ -9,7 +9,9 @@
             {% endfor %}
         </div>
     {% endif %}
-    
+    <div class="container">
+        <div class="row row-cols-3">
+          <div class="col">
         {% for auction in all_auctions %}
         <div class="listing">
         <ul>
@@ -31,9 +33,39 @@
             </tr>
         </ul>
         </div>
+        <div class="card" id="cardtile">
+            <div class="card-image">
+              <figure class="image">
+                <img src="{{ auction.image_URL }}" alt="Placeholder image">
+              </figure>
+            </div>
+            <div class="card-content">
+              <div class="media">
+                <div class="media-left">
+                  <p class="title is-4">{{ auction.title_item }}</p>
+                  <p class="subtitle is-3">
+                    {% if auction.bid.last %}
+                        Bid : {{ auction.bid.last.bid }}$
+                    {% else %}
+                        <div>No bid again, let's be the first to bid.</div>
+                        Start price : {{ auction.start_price }}$
+                    {% endif %}</p>
+                </div>
+              </div>
+              <div class="content">
+                {{ auction.description_item }}
+                Phasellus nec iaculis mauris. <a>@bulmaio</a>.
+                <a href="#">#{{ auction.title_item}}</a> <a href="#">#responsive</a>
+                <br>
+                <time datetime="2016-1-1">{{ auction.time }}</time>
+              </div>
+            </div>
+          </div>
         {% empty %}
             No active auctions
         {% endfor %}
-    
+        </div>
+      </div>
+    </div>
 
 {% endblock %}

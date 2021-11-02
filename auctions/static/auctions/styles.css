@@ -1,13 +1,26 @@
 body {
     width: 100%;
     height: auto;
+    padding: 4px;
+}
+
+.listing {
+
+    border: 1px 1px black solid;
+}
+
+.blockbody {
+    width: 100%;
+    height: auto;
     padding: 10px;
 }
 
-h1 {
-    font-size: 30px;
+.titlebrand {
+    font-family: 'Lobster', cursive;
+    
 }
 
-listing {
-    border: 1px black solid;
+#cardtile {
+    width: 25%;
+    height: auto;
 }
