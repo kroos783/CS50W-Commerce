@@ -3,33 +3,51 @@
 
 {% block body %}
 
-    <form action="{% url 'categories' %}" enctype="multipart/form-data" method="POST">
+    <form action="{% url 'categories' %}" enctype="multipart/form-data" method="POST" class="m-3" style="text-align: center;">
         {% csrf_token %}
-        {{ form.category }}
+        Select a category : {{ form.category }}
         <button type="submit" name="button" class="btn btn-primary" value="Filter">Filter</button>
     </form>
-    <ul>
+    <div class="container">
+        <div class="row row-cols-3">
     {% for auction in auctions %}
-        <tr>
-            <td style="width:40px">
-                <img src="{{ auction.image_URL }}" alt="img" style="width:25%">
-            </td>
-            <td>
-                <h5><a href="{% url 'auction' auction.id %}">{{ auction.title_item }}</a></h5>
-                <div>{{ auction.description_item }}</div>
-                {% if auction.bid.last %}
-                    <div>Bid : {{ auction.bid.last.bid }}$</div>
-                {% else %}
-                    <div>No bid again, let's be the first to bid.</div>
-                    <div>Start price : {{ auction.start_price }}$</div>
-                {% endif %}
-                <div>Listed by: {{ auction.user }}</div>
-            </td>
-        </tr>
+    <div class="col" style="margin-top:10px; display:flex; align-items: center;">
+        
+        <div class="card" id="cardtile">
+            <div class="card-image pt-3">
+              <figure class="image">
+                <img src="{{ auction.image_URL }}" alt="Placeholder image">
+              </figure>
+            </div>
+            <div class="card-content">
+              <div class="media">
+                <div class="media-left">
+                  <p class="title is-4"><a href="{% url 'auction' auction.id %}">{{ auction.title_item }}</a></p>
+                  <p class="subtitle is-3">
+                    {% if auction.bid.last %}
+                        Bid : {{ auction.bid.last.bid }}$
+                    {% else %}
+                        <div>No bid again, let's be the first to bid.</div>
+                        Start price : {{ auction.start_price }}$
+                    {% endif %}</p>
+                </div>
+              </div>
+              <div class="content">
+                <p>{{ auction.description_item }} <a href="#">#{{ auction.title_item}}</a></p>
+                
+                Listed by <a>@{{auction.user}}</a>.
+                
+                <br>
+                <time datetime="2016-1-1">{{ auction.time }}</time>
+              </div>
+            </div>
+          </div>
+        </div>
     {% empty %}
         <div>No auction in this category.</div>
     {% endfor %}
-    </ul>
+    </div>
+    </div>
     
 
 {% endblock %}

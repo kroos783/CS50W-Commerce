@@ -1,17 +1,21 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Create a Auction</h2>
+    <h2 style="text-align: center; margin:20px">Create a Auction</h2>
     {% if messages %}
-        <div class="messages">
+        <div class="messages m-4">
             {% for message in messages %}
                 <div {% if message.tags %} class="{{ message.tags }}">{% endif %}{{ message }}</div>
             {% endfor %}
         </div>
     {% endif %}
+    <div style="width: 250px; height:auto; margin-left: 45%; margin-top: 50px;">
+        <div style="display: flex; flex-direction: column; justify-self: center;">
         <form action="{% url 'create' %}" enctype="multipart/form-data" method="POST">
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Create Auction" class="btn btn-primary">
         </form>
+        </div>
+    </div>
     {% endblock %}

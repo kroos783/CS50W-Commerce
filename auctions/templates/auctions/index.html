@@ -1,9 +1,9 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2 style="text-align: center; margin:20px">Active Listings</h2>
     {% if messages %}
-        <div class="messages">
+        <div class="messages m-4">
             {% for message in messages %}
                 <div {% if message.tags %} class="{{ message.tags }}">{% endif %}{{ message }}</div>
             {% endfor %}
@@ -11,30 +11,12 @@
     {% endif %}
     <div class="container">
         <div class="row row-cols-3">
-          <div class="col">
+          
         {% for auction in all_auctions %}
-        <div class="listing">
-        <ul>
-            <tr>
-                <td style="width:40px">
-                    <img src="{{ auction.image_URL }}" alt="img" style="width:25%">
-                </td>
-                <td>
-                    <h5><a href="{% url 'auction' auction.id %}">{{ auction.title_item }}</a></h5>
-                    <div>{{ auction.description_item }}</div>
-                    {% if auction.bid.last %}
-                        <div>Bid : {{ auction.bid.last.bid }}$</div>
-                    {% else %}
-                        <div>No bid again, let's be the first to bid.</div>
-                        <div>Start price : {{ auction.start_price }}$</div>
-                    {% endif %}
-                    <div>Listed by: {{ auction.user }}</div>
-                </td>
-            </tr>
-        </ul>
-        </div>
+        <div class="col" style="margin-top:10px; display:flex; align-items: center;">
+        
         <div class="card" id="cardtile">
-            <div class="card-image">
+            <div class="card-image pt-3">
               <figure class="image">
                 <img src="{{ auction.image_URL }}" alt="Placeholder image">
               </figure>
@@ -42,7 +24,7 @@
             <div class="card-content">
               <div class="media">
                 <div class="media-left">
-                  <p class="title is-4">{{ auction.title_item }}</p>
+                  <p class="title is-4"><a href="{% url 'auction' auction.id %}">{{ auction.title_item }}</a></p>
                   <p class="subtitle is-3">
                     {% if auction.bid.last %}
                         Bid : {{ auction.bid.last.bid }}$
@@ -53,18 +35,20 @@
                 </div>
               </div>
               <div class="content">
-                {{ auction.description_item }}
-                Phasellus nec iaculis mauris. <a>@bulmaio</a>.
-                <a href="#">#{{ auction.title_item}}</a> <a href="#">#responsive</a>
+                <p>{{ auction.description_item }} <a href="#">#{{ auction.title_item}}</a></p>
+                
+                Listed by <a>@{{auction.user}}</a>.
+                
                 <br>
                 <time datetime="2016-1-1">{{ auction.time }}</time>
               </div>
             </div>
           </div>
+        </div>
         {% empty %}
             No active auctions
         {% endfor %}
-        </div>
+        
       </div>
     </div>
 

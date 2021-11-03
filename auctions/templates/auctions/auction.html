@@ -2,7 +2,7 @@
 
 {% block body %}
     {% if messages %}
-        <div class="messages">
+        <div class="messages m-4">
             {% for message in messages %}
                 <div {% if message.tags %} class="{{ message.tags }}">{% endif %}{{ message }}</div>
             {% endfor %}
@@ -18,7 +18,7 @@
         <strong>No body win this auction. </strong>
         {% endif %}
     {% endif %}
-    <h2>{{ auction.title_item }}</h2>
+    <h2  style="text-align: center; margin:20px">{{ auction.title_item }}</h2>
         <tr>
             <td style="width:40px">
                 <img src="{{ auction.image_URL }}" alt="img" style="width:25%">
@@ -26,7 +26,7 @@
             <td>
                 <div>{{ auction.description_item }}</div>
                 {% if auction.bid.last %}
-                    <div>Bid : {{ auction.bid.last.bid }}$</div>
+                    <div><strong>Bid : {{ auction.bid.last.bid }}$</strong></div>
                     <div>Best bid by : {{ auction.bid.last.user.username }}</div>
                 {% else %}
                     <div>No bid again, let's be the first to bid.</div>
@@ -54,8 +54,8 @@
         {% endif %}
         <tr>
             <td>
-                <div>Listed by: {{ auction.user }}</div>
-                <div>Published {{ auction.time }}</div>
+                <div><small>Listed by: {{ auction.user }}</small></div>
+                <div><small>Published {{ auction.time }}</small></div>
             </td>
         </tr>
         {% if user.username != auction.user.username %}
@@ -66,14 +66,21 @@
         </form>
         {% endif %}
         {% for comment in auction.comments.all %}
-        <tr>
-            <td>
-                <div>User : {{ comment.user }}</div>
-                <div>Comment : {{ comment.comment }}</div>
-                <div>Delivery : {{ comment.time }}</div>
-            </td>
-        </tr>
+        <div class="box " style="max-width: 30%; box-shadow: 0px 10px 15px black; margin-left: 15%;">
+            <article class="media">
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong>{{ comment.user }}</strong> <small>@{{ comment.user }}</small>
+                    <br>
+                    {{ comment.comment }}
+                  </p>
+                  <small>{{comment.time}}</small>
+                </div>
+              </div>
+            </article>
+          </div>
         {% endfor %}
-    
+        
     
 {% endblock %}
