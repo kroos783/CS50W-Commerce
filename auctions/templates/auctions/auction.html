@@ -18,10 +18,11 @@
         <strong>No body win this auction. </strong>
         {% endif %}
     {% endif %}
-    <h2  style="text-align: center; margin:20px">{{ auction.title_item }}</h2>
+    <h2 style="text-align: center; margin:20px">{{ auction.title_item }}</h2>
+        <div style="text-align: center; margin:20px">
         <tr>
             <td style="width:40px">
-                <img src="{{ auction.image_URL }}" alt="img" style="width:25%">
+                <img src="{{ auction.image_URL }}" alt="img" style="max-height: 600px;">
             </td>
             <td>
                 <div>{{ auction.description_item }}</div>
@@ -52,35 +53,57 @@
                 <button type="submit" name="button" class="btn btn-danger" value="Close">Close auction</button>
             </form>        
         {% endif %}
+        </div>
         <tr>
             <td>
                 <div><small>Listed by: {{ auction.user }}</small></div>
                 <div><small>Published {{ auction.time }}</small></div>
             </td>
         </tr>
-        {% if user.username != auction.user.username %}
-        <form action="{% url 'auction' auction.id %}" method="POST">
-            {% csrf_token %}
-            {{ commitForm }}
-            <button type="submit" name="button" class="btn btn-primary" value="Comment">Add comment</button>
-        </form>
-        {% endif %}
+        
         {% for comment in auction.comments.all %}
-        <div class="box " style="max-width: 30%; box-shadow: 0px 10px 15px black; margin-left: 15%;">
-            <article class="media">
-              <div class="media-content">
+        <hr style="margin-left:30%; margin-right: 30%;">
+        <div style="margin-left:31%; margin-right: 30%;">
+        
+          <article class="media">
+            <div class="media-content">
                 <div class="content">
-                  <p>
+                <p>
                     <strong>{{ comment.user }}</strong> <small>@{{ comment.user }}</small>
                     <br>
                     {{ comment.comment }}
-                  </p>
-                  <small>{{comment.time}}</small>
+                    <br>
+                    <small>{{comment.time}}</small>
+                </p>
                 </div>
-              </div>
+            </div>
             </article>
-          </div>
-        {% endfor %}
+        </div>
         
+        
+        {% endfor %}
+        {% if user.username != auction.user.username %}
+        
+        <div style="margin-left:30%; margin-right: 30%;">
+        <hr>
+        <article class="media">
+            <div class="media-content">
+            <form action="{% url 'auction' auction.id %}" method="POST">
+            {% csrf_token %}
+                <div class="field">
+                <p class="control">
+                    <textarea class="textarea"  name="comment" maxlength="512" required id="id_comment" placeholder="Add a comment..."></textarea>
+                </p>
+                </div>
+                <div class="field">
+                <p class="control">
+                    <button type="submit" name="button" class="btn btn-primary" value="Comment">Post comment</button>
+                </p>
+                </div>
+            </form>
+            </div>
+            </article>
+            </div>
+        {% endif %}
     
 {% endblock %}
