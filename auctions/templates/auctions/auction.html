@@ -57,7 +57,7 @@
         <tr>
             <td>
                 <div><small>Listed by: {{ auction.user }}</small></div>
-                <div><small>Published {{ auction.time }}</small></div>
+                <div><small>Published {{ auction.time | timesince }} ago - {{ auction.time }}</small></div>
             </td>
         </tr>
         
