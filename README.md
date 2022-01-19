@@ -43,6 +43,8 @@ Listing Page: Clicking on a listing should take users to a page specific to that
 
 &nbsp;
 
+---
+
 ### Contribute
 
 Contributions are always welcome! Please create a PR to contribute.
